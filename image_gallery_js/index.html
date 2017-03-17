@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Image Gallery</title>
+  <!-- Bootstrap Latest compiled and minified CSS -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+  <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+  <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+  <!--[if lt IE 9]>
+  <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+  <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+  <![endif]-->
+</head>
+<body>
+
+  <nav class="navbar navbar-default navbar-inverse">
+    <div class="container-fluid">
+      <!-- Brand and toggle get grouped for better mobile display -->
+      <div class="navbar-header">
+        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+          <span class="sr-only">Toggle navigation</span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="#">Image Gallery</a>
+      </div>
+
+      <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+        <form id='form_search' class="navbar-form navbar-right">
+          <div class="form-group">
+            <input id="tags" type="text" class="form-control" placeholder="Search">
+          </div>
+          <button type="submit" class="btn btn-default">Submit</button>
+        </form>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-12">
+        <div  class='btn-toolbar pull-right'>
+          <nav aria-label="...">
+            <ul class="pager">
+              <li id="prev_page"><a href="#" onclick="update_pagination('prev');">Previous</a></li>
+              <li id="next_page"><a href="#" onclick="update_pagination('next');">Next</a></li>
+            </ul>
+          </nav>
+        </div>
+        <h1 class="page-header">
+          Image Gallery
+        </h1>
+      </div>
+    </div>
+    <div class="row" id="gallery"></div>
+  </div>
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+  <!-- Latest compiled and minified JavaScript -->
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+
+  <script type="text/javascript">
+  var tags;
+  var url;
+  var image_page = 5;  // Number of images that we will show in page
+  var current_page = 1;  // We need it, if we want to use number pagination
+
+  // The first time we will use getRecent method
+  get_images("getRecent", current_page, "");
+
+  // Search form submit
+  $("#form_search").submit(function(e){
+    e.preventDefault();
+    tags = $( "#tags" ).val();
+    current_page = 1;
+    get_images("search", current_page, tags);
+  });
+
+  function get_images(api_method, show_page, tags){
+    /* Depend on what we want we can use different API method */
+    $( "#gallery" ).empty();  // Clean gallery div
+    // Create flickr API url with params
+    params = {
+      method: "flickr.photos."+api_method,
+      api_key: "bc00f9225ed46fbfe08befc774193029",
+      per_page: image_page,
+      page: show_page,
+      format: "json",
+      media: "photos",
+      nojsoncallback: 1
+    };
+    // build api url
+    url = "https://api.flickr.com/services/rest/?"+$.param( params );
+    if (typeof tags != "undefined" && tags != "" ) { url += "&tags="+tags; }
+    // Get images using ajax
+    var src, src_tmb;
+    $.getJSON(url, function(data){
+      // For each data we received create a div with image inside gallery
+      $.each(data.photos.photo, function(i, item){
+        // flickr src url format https://farm{farm-id}.staticflickr.com/{server-id}/{id}_{secret}_[mstzb].jpg
+        src = "http://farm"+ item.farm +".static.flickr.com/"+ item.server +"/"+ item.id +"_"+ item.secret +".jpg";
+        src_tmb = "http://farm"+ item.farm +".static.flickr.com/"+ item.server +"/"+ item.id +"_"+ item.secret +"_t.jpg";
+        $("#gallery").append("<div class='col-lg-2 col-md-2 col-xs-4 thumb'><a href='"+src+"' target='_blank'><img class='img-responsive' src='"+src_tmb+"' style='padding: 3px; alt=''></a></div>");
+      });
+    });
+  }
+
+  function update_pagination(action){
+    if (action == "next"){
+      current_page++;
+    } else if (action == "prev") {
+      current_page--;
+    }
+    get_images("search", current_page, tags);
+  }
+  </script>
+
+</body>
+</html>
