@@ -13,10 +13,12 @@ This is a Simple Image Gallery using flickr api.
 * image_gallery_js/index.html: you can double click and check it in the browser
 * image_gallery_php/index.php
 	**Mac:** You can run with built-in web server.
+
 		```
 		>>> cd project-name
 		>>> php -S localhost:8000
 		```
+		
 		Visit http://localhost:8000/ in your web browser
 
 ## Notes
