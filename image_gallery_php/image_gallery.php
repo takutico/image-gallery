@@ -29,8 +29,8 @@ class ImageGallery {
     if ($this->tags != ''){
       $params = '&tags=' . $this->tags;
     }
-    echo "<li id='prev_page'><a href='$thispage?page=" . (intval($this->page)-1) . $params . "' >Prev</a></li>\n";
-    echo "<li id='next_page'><a href='$thispage?page=" . (intval($this->page)+1) . $params . "' >Next</a></li>\n";
+    echo "<li id='prev_page'><a href='$current_page?page=" . (intval($this->page)-1) . $params . "' >Prev</a></li>\n";
+    echo "<li id='next_page'><a href='$current_page?page=" . (intval($this->page)+1) . $params . "' >Next</a></li>\n";
   }
 
 
@@ -46,7 +46,7 @@ class ImageGallery {
     }
 
     $params = array(
-      'api_key'   => bc00f9225ed46fbfe08befc774193029,
+      'api_key'   => 'bc00f9225ed46fbfe08befc774193029',
       'method'    => $method,
       'per_page'  => $this->per_page,
       'page'      => $this->page,
